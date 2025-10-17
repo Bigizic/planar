@@ -6,6 +6,7 @@ import {
   RESET_FORM,
 } from './constants';
 import { BoqResult } from './types';
+import api from '../../lib/api';
 
 export const setFormField = (field: string, value: string) => ({
   type: SET_FORM_FIELD,
@@ -36,24 +37,55 @@ export const calculateBoq = (formData: any) => async (dispatch: any) => {
   dispatch(setError(null));
 
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    const response = await fetch(`${apiUrl}/api/boq/calculate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to calculate BoQ');
-    }
-
-    const result = await response.json();
-    dispatch(setResult(result));
+    const response = await api.post('/boq/calculate', formData);
+    dispatch(setResult(response.data));
   } catch (error) {
     dispatch(setError(error instanceof Error ? error.message : 'An error occurred'));
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+export const fetchBoqRecords = () => async (dispatch: any) => {
+  dispatch(setLoading(true));
+  dispatch(setError(null));
+
+  try {
+    const response = await api.get('/boq/records');
+    return response.data;
+  } catch (error) {
+    dispatch(setError(error instanceof Error ? error.message : 'Failed to fetch records'));
+    throw error;
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+export const fetchBoqRecordById = (id: string) => async (dispatch: any) => {
+  dispatch(setLoading(true));
+  dispatch(setError(null));
+
+  try {
+    const response = await api.get(`/boq/records/${id}`);
+    return response.data;
+  } catch (error) {
+    dispatch(setError(error instanceof Error ? error.message : 'Failed to fetch record'));
+    throw error;
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+export const deleteBoqRecord = (id: string) => async (dispatch: any) => {
+  dispatch(setLoading(true));
+  dispatch(setError(null));
+
+  try {
+    await api.delete(`/boq/records/${id}`);
+    return true;
+  } catch (error) {
+    dispatch(setError(error instanceof Error ? error.message : 'Failed to delete record'));
+    throw error;
   } finally {
     dispatch(setLoading(false));
   }
