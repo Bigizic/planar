@@ -36,7 +36,8 @@ export const calculateBoq = (formData: any) => async (dispatch: any) => {
   dispatch(setError(null));
 
   try {
-    const response = await fetch('/api/calculate', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const response = await fetch(`${apiUrl}/api/boq/calculate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
