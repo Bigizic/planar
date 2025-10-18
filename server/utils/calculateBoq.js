@@ -1,24 +1,3 @@
-export interface BoqInput {
-  length: number;
-  width: number;
-  location: string;
-}
-
-export interface MaterialCalculation {
-  cement: number;
-  sand: number;
-  gravel: number;
-  water: number;
-}
-
-export interface BoqResult {
-  excavationVolume: number;
-  blinding: MaterialCalculation;
-  foundation: MaterialCalculation;
-  column: MaterialCalculation;
-  laborCost: number;
-}
-
 const TRENCH_WIDTH = 0.6;
 const TRENCH_DEPTH = 1.0;
 const BLINDING_THICKNESS = 0.05;
@@ -34,7 +13,7 @@ const COLUMN_DEPTH = 0.75;
 const COLUMN_WIDTH = 0.225;
 const NUM_COLUMNS = 4;
 
-const LABOR_COST_PER_M3: { [key: string]: number } = {
+const LABOR_COST_PER_M3 = {
   Lagos: 4000,
   Abuja: 3800,
   PortHarcourt: 3700,
@@ -44,11 +23,11 @@ const LABOR_COST_PER_M3: { [key: string]: number } = {
 };
 
 function calculateMaterials(
-  dryVolume: number,
-  cementRatio: number,
-  sandRatio: number,
-  gravelRatio: number
-): MaterialCalculation {
+  dryVolume,
+  cementRatio,
+  sandRatio,
+  gravelRatio
+) {
   const totalRatio = cementRatio + sandRatio + gravelRatio;
 
   const cement = ((cementRatio / totalRatio) * dryVolume) / CEMENT_BAG_VOLUME;
@@ -64,7 +43,7 @@ function calculateMaterials(
   };
 }
 
-export function calculateBoq(input: BoqInput): BoqResult {
+function calculateBoq(input) {
   const { length, width, location } = input;
 
   const perimeter = 4 * length;
@@ -94,3 +73,8 @@ export function calculateBoq(input: BoqInput): BoqResult {
     laborCost,
   };
 }
+
+module.exports = {
+  calculateBoq,
+  calculateMaterials
+};

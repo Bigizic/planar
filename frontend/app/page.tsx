@@ -1,5 +1,5 @@
-import BoqContainer from '@/containers/BoqContainer';
+import Homepage from '@/containers/Homepage';
 
 export default function Home() {
-  return <BoqContainer />;
+  return <Homepage />;
 }

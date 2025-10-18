@@ -100,7 +100,7 @@ export default function BoqResults({ result, form, onReset }: BoqResultsProps) {
     <div className="space-y-6">
       <Card className="shadow-lg border-slate-200">
         <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-t-lg">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
               <CardTitle className="text-2xl flex items-center gap-2">
                 <FileText className="w-6 h-6" />
@@ -116,7 +116,7 @@ export default function BoqResults({ result, form, onReset }: BoqResultsProps) {
           </div>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="flex gap-4 mb-6">
+          <div className="flex gap-4 mb-6 flex-wrap">
             <Button
               onClick={downloadCSV}
               variant="outline"

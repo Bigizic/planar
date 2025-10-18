@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { BUILDING_TYPES, LOCATIONS } from '@/containers/BoqContainer/constants';
+import { BUILDING_TYPES, LOCATIONS } from '@/containers/Homepage/constants';
 
 interface BoqFormProps {
   form: {
@@ -39,7 +39,7 @@ export default function BoqForm({
 
   return (
     <Card className="shadow-lg border-slate-200">
-      <CardHeader className="bg-gradient-to-r from-blue-600 to-slate-700 text-white rounded-t-lg">
+      <CardHeader className="bg-blue-600 text-white rounded-t-lg">
         <CardTitle className="text-2xl flex items-center gap-2">
           <Building2 className="w-6 h-6" />
           Foundation Cost Estimator
@@ -155,7 +155,7 @@ export default function BoqForm({
           <Button
             type="submit"
             disabled={!isFormValid || loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-slate-700 hover:from-blue-700 hover:to-slate-800 text-white font-medium py-6 text-lg"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-6 text-lg"
           >
             {loading ? 'Calculating...' : 'Generate Estimate'}
           </Button>
