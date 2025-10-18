@@ -1,40 +1,32 @@
 'use client';
 
-import { useReducer } from 'react';
-import { boqReducer } from './reducer';
-import { setFormField, calculateBoq } from './actions';
 import BoqForm from '@/components/BoqForm';
 import BoqResults from '@/components/BoqResults';
+import { connect } from 'react-redux';
+import { BoqState } from './types';
+import * as actions from './actions'
 
-const initialState = {
-  form: {
-    projectName: 'Untitled Project',
-    buildingType: '',
-    length: '',
-    width: '',
-    location: '',
-  },
-  result: null,
-  loading: false,
-  error: null,
-};
+interface HomepageStateProps {
+  boqState: BoqState;
+}
 
-export default function Homepage() {
-  const [state, dispatch] = useReducer(boqReducer, initialState);
+interface HomepageDispatchProps {
+  setFormField: (field: string, value: string) => void;
+  calculateBoq: (formData: any) => Promise<void>;
+  resetForm: () => void;
+}
 
+interface HomepageOwnProps {}
+
+type HomepageProps = HomepageStateProps & HomepageDispatchProps & HomepageOwnProps;
+
+function Homepage({ boqState, setFormField, calculateBoq, resetForm }: HomepageProps) {
   const handleFieldChange = (field: string, value: string) => {
-    dispatch(setFormField(field, value));
+    setFormField(field, value);
   };
 
   const handleSubmit = async () => {
-    const dispatchAsync = (action: any) => {
-      if (typeof action === 'function') {
-        return action(dispatch);
-      }
-      return dispatch(action);
-    };
-
-    await calculateBoq(state.form)(dispatchAsync);
+    await calculateBoq(boqState.form);
   };
 
   return (
@@ -67,19 +59,19 @@ export default function Homepage() {
 
         {/* Cost Estimator Card */}
         <div className="max-w-6xl">
-          {!state.result ? (
+          {!boqState.result ? (
             <BoqForm
-              form={state.form}
-              loading={state.loading}
-              error={state.error}
+              form={boqState.form}
+              loading={boqState.loading}
+              error={boqState.error}
               onFieldChange={handleFieldChange}
               onSubmit={handleSubmit}
             />
           ) : (
             <BoqResults
-              result={state.result}
-              form={state.form}
-              onReset={() => dispatch({ type: 'boq/RESET_FORM' })}
+              result={boqState.result}
+              form={boqState.form}
+              onReset={resetForm}
             />
           )}
         </div>
@@ -87,3 +79,11 @@ export default function Homepage() {
     </div>
   );
 }
+const mapStateToProps = (state: any) => {
+  return {
+    boqState: state.boq,
+  }
+};
+
+export default connect(mapStateToProps, actions)(Homepage);
+
