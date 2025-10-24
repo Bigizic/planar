@@ -32,12 +32,26 @@ export const resetForm = () => ({
   type: RESET_FORM,
 });
 
-export const calculateBoq = (formData: any) => async (dispatch: any) => {
+export const calculateBoq = (foundationForm: any, preliminaryForm: any) => async (dispatch: any) => {
   dispatch(setLoading(true));
   dispatch(setError(null));
 
   try {
-    const response = await api.post('/boq/calculate', formData);
+    // Prepare the request payload with all necessary data
+    const payload = {
+      length: foundationForm.length,
+      width: foundationForm.width,
+      location: preliminaryForm.location,
+      buildingType: preliminaryForm.buildingType,
+      projectName: preliminaryForm.projectName,
+      // Include additional preliminary data for potential use
+      foundationType: preliminaryForm.foundationType,
+      blockWidth: preliminaryForm.blockWidth,
+      numberOfColumns: preliminaryForm.numberOfColumns,
+      buildingPerimeter: preliminaryForm.buildingPerimeter,
+    };
+
+    const response = await api.post('/boq/calculate', payload);
     dispatch(setResult(response.data));
   } catch (error) {
     dispatch(setError(error instanceof Error ? error.message : 'An error occurred'));

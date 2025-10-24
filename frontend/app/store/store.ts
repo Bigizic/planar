@@ -6,6 +6,7 @@ export const store = configureStore({
   reducer: {
     boq: boqReducer,
     preliminary: preliminaryReducer,
+    // Add more reducers here as you create them
   },
 });
 

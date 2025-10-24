@@ -3,7 +3,17 @@ const BoqRecord = require('../models/BoqRecord');
 
 const calculateBoqRecord = async (req, res) => {
   try {
-    const { length, width, location, buildingType, projectName } = req.body;
+    const { 
+      length, 
+      width, 
+      location, 
+      buildingType, 
+      projectName,
+      foundationType,
+      blockWidth,
+      numberOfColumns,
+      buildingPerimeter
+    } = req.body;
 
     // Validate required fields
     if (!length || !width || !location) {
@@ -12,14 +22,19 @@ const calculateBoqRecord = async (req, res) => {
       });
     }
 
-    // Calculate BOQ
+    // Use provided perimeter or calculate from length
+    const perimeter = buildingPerimeter 
+      ? parseFloat(buildingPerimeter) 
+      : 4 * parseFloat(length);
+
+    // Calculate BOQ with additional parameters
     const result = calculateBoq({
       length: parseFloat(length),
       width: parseFloat(width),
       location,
+      perimeter,
+      numberOfColumns: numberOfColumns ? parseInt(numberOfColumns) : undefined,
     });
-
-    const perimeter = 4 * parseFloat(length);
 
     // Prepare record data
     const recordData = {
@@ -57,7 +72,8 @@ const calculateBoqRecord = async (req, res) => {
   } catch (error) {
     console.error('BOQ calculation error:', error);
     res.status(500).json({
-      error: 'Internal server error'
+      error: 'Internal server error',
+      message: error.message
     });
   }
 };

@@ -1,20 +1,3 @@
-export const BUILDING_TYPES = [
-  'One room',
-  'Two rooms',
-  'Three rooms',
-  'Four rooms',
-  'Custom',
-] as const;
-
-export const LOCATIONS = [
-  'Lagos',
-  'Abuja',
-  'Port Harcourt',
-  'Ibadan',
-  'Kano',
-  'Other',
-] as const;
-
 export const SET_FORM_FIELD = 'boq/SET_FORM_FIELD';
 export const SET_RESULT = 'boq/SET_RESULT';
 export const SET_LOADING = 'boq/SET_LOADING';

@@ -1,9 +1,6 @@
-export interface BoqFormState {
-  projectName: string;
-  buildingType: string;
+export interface FoundationFormState {
   length: string;
   width: string;
-  location: string;
 }
 
 export interface MaterialCalculation {
@@ -23,7 +20,7 @@ export interface BoqResult {
 }
 
 export interface BoqState {
-  form: BoqFormState;
+  form: FoundationFormState;
   result: BoqResult | null;
   loading: boolean;
   error: string | null;

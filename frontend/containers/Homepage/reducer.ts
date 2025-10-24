@@ -9,11 +9,8 @@ import { BoqState } from './types';
 
 const initialState: BoqState = {
   form: {
-    projectName: 'Untitled Project',
-    buildingType: '',
     length: '',
     width: '',
-    location: '',
   },
   result: null,
   loading: false,
