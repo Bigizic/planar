@@ -44,9 +44,10 @@ function calculateMaterials(
 }
 
 function calculateBoq(input) {
-  const { length, width, location } = input;
+  const { length, width, location, perimeter: inputPerimeter, numberOfColumns } = input;
 
-  const perimeter = 4 * length;
+  // Use provided perimeter or calculate from length
+  const perimeter = inputPerimeter || (4 * length);
 
   const excavationVolume = parseFloat((perimeter * TRENCH_WIDTH * TRENCH_DEPTH).toFixed(2));
 
@@ -58,7 +59,9 @@ function calculateBoq(input) {
   const foundationDryVolume = foundationVolume * DRY_VOLUME_FACTOR;
   const foundation = calculateMaterials(foundationDryVolume, 1, 2, 4);
 
-  const columnVolume = COLUMN_DEPTH * COLUMN_WIDTH * COLUMN_WIDTH * NUM_COLUMNS;
+  // Use provided numberOfColumns or default
+  const numColumns = numberOfColumns || NUM_COLUMNS;
+  const columnVolume = COLUMN_DEPTH * COLUMN_WIDTH * COLUMN_WIDTH * numColumns;
   const columnDryVolume = columnVolume * DRY_VOLUME_FACTOR;
   const column = calculateMaterials(columnDryVolume, 1, 2, 4);
 

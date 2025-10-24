@@ -1,32 +1,58 @@
 'use client';
 
+import { useState } from 'react';
+import Preliminary from '@/containers/Preliminary';
 import BoqForm from '@/components/BoqForm';
 import BoqResults from '@/components/BoqResults';
+import StageIndicator from '@/components/StageIndicator';
 import { connect } from 'react-redux';
 import { BoqState } from './types';
-import * as actions from './actions'
+import * as actions from './actions';
 
 interface HomepageStateProps {
   boqState: BoqState;
+  preliminaryState: any;
 }
 
 interface HomepageDispatchProps {
   setFormField: (field: string, value: string) => void;
-  calculateBoq: (formData: any) => Promise<void>;
+  calculateBoq: (foundationForm: any, preliminaryForm: any) => Promise<void>;
   resetForm: () => void;
+  resetPreliminaryForm: () => void;
 }
 
 interface HomepageOwnProps {}
 
 type HomepageProps = HomepageStateProps & HomepageDispatchProps & HomepageOwnProps;
 
-function Homepage({ boqState, setFormField, calculateBoq, resetForm }: HomepageProps) {
+function Homepage({ boqState, preliminaryState, setFormField, calculateBoq, resetForm, resetPreliminaryForm }: HomepageProps) {
+  const [currentStep, setCurrentStep] = useState<'preliminary' | 'foundation' | 'result'>('preliminary');
+  const [completedStages, setCompletedStages] = useState<string[]>([]);
+
   const handleFieldChange = (field: string, value: string) => {
     setFormField(field, value);
   };
 
+  const handleNextToFoundation = () => {
+    setCompletedStages([...completedStages, 'preliminary']);
+    setCurrentStep('foundation');
+  };
+
+  const handleBackToPreliminary = () => {
+    setCurrentStep('preliminary');
+  };
+
   const handleSubmit = async () => {
-    await calculateBoq(boqState.form);
+    setCompletedStages([...completedStages, 'foundation']);
+    await calculateBoq(boqState.form, preliminaryState.form);
+    setCurrentStep('result');
+  };
+
+  const handleReset = () => {
+    resetForm();
+    resetPreliminaryForm();
+    setCurrentStep('preliminary');
+    setCompletedStages([]);
   };
 
   return (
@@ -43,9 +69,9 @@ function Homepage({ boqState, setFormField, calculateBoq, resetForm }: HomepageP
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 py-8 md:py-12 max-w-6xl">
+      <div className="relative z-10 container mx-auto px-4 py-8 md:py-12 max-w-7xl">
         {/* Hero Section */}
-        <header className="mb-8 md:mb-12 text-center">
+        <header className="mb-6 md:mb-8 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 md:mb-4 drop-shadow-lg">
             Planar
           </h1>
@@ -57,23 +83,47 @@ function Homepage({ boqState, setFormField, calculateBoq, resetForm }: HomepageP
           </p>
         </header>
 
-        {/* Cost Estimator Card */}
-        <div className="max-w-6xl">
-          {!boqState.result ? (
-            <BoqForm
-              form={boqState.form}
-              loading={boqState.loading}
-              error={boqState.error}
-              onFieldChange={handleFieldChange}
-              onSubmit={handleSubmit}
-            />
-          ) : (
-            <BoqResults
-              result={boqState.result}
-              form={boqState.form}
-              onReset={resetForm}
+        {/* Main Content Area - Flex layout on desktop */}
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Stage Indicator - Left sidebar on desktop, top on mobile */}
+          {currentStep !== 'result' && (
+            <StageIndicator 
+              currentStage={currentStep} 
+              completedStages={completedStages}
             />
           )}
+
+          {/* Form Content - Takes remaining width */}
+          <div className="flex-1 min-w-0">
+            {currentStep === 'preliminary' && (
+              <Preliminary onNext={handleNextToFoundation} />
+            )}
+
+            {currentStep === 'foundation' && (
+              <BoqForm
+                form={boqState.form}
+                loading={boqState.loading}
+                error={boqState.error}
+                onFieldChange={handleFieldChange}
+                onSubmit={handleSubmit}
+                onBack={handleBackToPreliminary}
+              />
+            )}
+
+            {currentStep === 'result' && boqState.result && (
+              <BoqResults
+                result={boqState.result}
+                form={{
+                  projectName: preliminaryState.form.projectName,
+                  buildingType: preliminaryState.form.buildingType,
+                  length: boqState.form.length,
+                  width: boqState.form.width,
+                  location: preliminaryState.form.location,
+                }}
+                onReset={handleReset}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -82,8 +132,14 @@ function Homepage({ boqState, setFormField, calculateBoq, resetForm }: HomepageP
 const mapStateToProps = (state: any) => {
   return {
     boqState: state.boq,
+    preliminaryState: state.preliminary,
   }
 };
 
-export default connect(mapStateToProps, actions)(Homepage);
+const mapDispatchToProps = {
+  ...actions,
+  resetPreliminaryForm: () => ({ type: 'preliminary/RESET_FORM' }),
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Homepage);
 
